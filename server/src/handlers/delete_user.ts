@@ -1,8 +1,19 @@
+import { db } from '../db';
+import { usersTable } from '../db/schema';
 import { type GetUserInput } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export const deleteUser = async (input: GetUserInput): Promise<boolean> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is deleting a user from the database by ID.
-    // Should return true if deletion was successful, false otherwise.
-    return false;
+  try {
+    // Delete user record by ID
+    const result = await db.delete(usersTable)
+      .where(eq(usersTable.id, input.id))
+      .execute();
+
+    // Check if any rows were affected (user existed and was deleted)
+    return (result.rowCount ?? 0) > 0;
+  } catch (error) {
+    console.error('User deletion failed:', error);
+    throw error;
+  }
 };
